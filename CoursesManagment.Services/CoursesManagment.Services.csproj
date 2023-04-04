@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+		<PackageReference Include="Dapper" Version="2.0.90" />
+		<PackageReference Include="EPPlus" Version="6.0.6" />
+		<PackageReference Include="Hangfire" Version="1.7.24" />
+		<PackageReference Include="Mapster" Version="7.3.0" />
+		<PackageReference Include="Humanizer.Core" Version="2.8.26" />
+		<PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.5" />
+		<PackageReference Include="NETCore.MailKit" Version="2.0.3" />
+		<PackageReference Include="NPOI" Version="2.5.1" />
+		<PackageReference Include="Npoi.Mapper" Version="3.5.1" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.9" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\CoursesManagment.Core\CoursesManagment.Core.csproj" />
+	  <ProjectReference Include="..\CoursesManagment.Data\CoursesManagment.Data.csproj" />
+	  <ProjectReference Include="..\CoursesManagment.DTO\CoursesManagment.DTO.csproj" />
+	</ItemGroup>
+</Project>
