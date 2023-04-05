@@ -1,9 +1,15 @@
 ﻿using CoursesManagment.Core.Common;
 using CoursesManagment.Core.Interfaces;
+using CoursesManagment.Data.DbModels.SecuritySchema;
 using CoursesManagment.DTO.Security.User;
 using CoursesManagment.Services.Security.Account;
+using CoursesManagment.Validators.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using CoursesManagment.Core.Extensions;
+using CoursesManagment.Geteway.Extensions;
+using Nest;
 
 namespace CoursesManagment.Geteway.Controllers.Account
 {
@@ -11,23 +17,36 @@ namespace CoursesManagment.Geteway.Controllers.Account
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
-
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
+        private ApplicationUser _user;
         public AccountController(
            IAccountService accountService,
            IResponseDTO response,
+           UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher,
            IHttpContextAccessor httpContextAccessor) : base(response, httpContextAccessor)
         {
             _accountService = accountService;
+            _userManager = userManager;
+            _passwordHasher = passwordHasher;
         }
 
 
         [AllowAnonymous]
         [Route("login")]
         [HttpPost]
-        public async Task<string> Login([FromBody] LoginParamsDto loginParams)
+        public async Task<IResponseDTO> Login([FromBody] LoginParamsDto loginParams)
         {
+            // Validate
+            var validationResult = await (new LoginValidator(_userManager, _passwordHasher)).ValidateAsync(loginParams);
+            if (!validationResult.IsValid)
+            {
+                _response.IsPassed = false;
+                _response.Errors = validationResult.ErrorMsg();
+                return _response;
+            }
             _response.Data = await _accountService.Login(loginParams);
-            return _response.Data;
+            return Ok(_response.Data) ;
         }
 
         [AllowAnonymous]

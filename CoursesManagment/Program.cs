@@ -1,3 +1,4 @@
+using CoursesManagment.Geteway.ExceptionHandling;
 using CoursesManagment.Geteway.Extensions;
 using CoursesManagment.Services;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllerConfiguration();
 builder.Services.AddServicesApplication();
+builder.Services.AddExceptionHandling();
+
 #endregion
 
 #region Email
@@ -41,7 +44,7 @@ else // Production
 #region  Swagger
 app.UseBaseSwagger();
 #endregion
-
+app.UseExceptionHandling();
 app.UseIdentity();
 app.UseStaticFiles();
 app.UseControllerConfiguration();

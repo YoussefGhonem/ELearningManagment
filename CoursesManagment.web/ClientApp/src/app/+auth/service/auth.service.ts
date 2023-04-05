@@ -8,6 +8,7 @@ import { HttpService, NotificationService } from "@shared/services";
 import { LocalStorageKeys } from "@shared/default-values";
 import { IdentityController } from "app/+users/controllers";
 import { environment } from "environments/environment";
+import { X } from 'angular-feather/icons';
 
 @Injectable({
   providedIn: 'root'
@@ -48,10 +49,12 @@ export class AuthService {
     };
 
     return this._httpService.POST(IdentityController.Login, body)
-      .subscribe((res: string) => {
+      .subscribe((res: any) => {
+        if (res.isPassed != null && res.isPassed == false) {
+          return this._notificationService.error('Invalid Info', res.errors?.map(x => x.description));
+        }
         this.updateToken(res);
         console.log("this.currentUser?.roles", this.currentUser?.roles);
-
         if (this.currentUser?.roles.includes('Admin')) {
           this._router.navigate(['/dashboard/admin']);
         }

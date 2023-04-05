@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using CoursesManagment.Core.Common;
 
 namespace CoursesManagment.Core.Interfaces
 {
@@ -6,7 +6,7 @@ namespace CoursesManagment.Core.Interfaces
     {
         bool IsPassed { get; set; }
         string Message { get; set; }
-        List<string> Errors { get; set; }
+        List<ResponseErrorDto> Errors { get; set; }
         dynamic Data { get; set; }
     }
 }

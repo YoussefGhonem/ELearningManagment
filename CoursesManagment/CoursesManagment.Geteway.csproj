@@ -16,7 +16,9 @@
 
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\CoursesManagment.Core\CoursesManagment.Core.csproj" />
 	  <ProjectReference Include="..\CoursesManagment.Data\CoursesManagment.Data.csproj" />
 	  <ProjectReference Include="..\CoursesManagment.Services\CoursesManagment.Services.csproj" />
+	  <ProjectReference Include="..\CoursesManagment.Validators\CoursesManagment.Validators.csproj" />
 	</ItemGroup>
 </Project>

@@ -9,10 +9,10 @@ namespace CoursesManagment.Core.Common
         {
             IsPassed = false;
             Message = "";
-            Errors = new List<string>();
+            Errors = new List<ResponseErrorDto>();
         }
         public bool IsPassed { get; set; }
-        public List<string> Errors { get; set; }
+        public List<ResponseErrorDto> Errors { get; set; }
         public string Message { get; set; }
         public dynamic Data { get; set; }
 

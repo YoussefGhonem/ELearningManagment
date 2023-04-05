@@ -1,6 +1,6 @@
 ﻿using CoursesManagment.Core.Common;
 using CoursesManagment.Core.CurrentUser;
-using CoursesManagment.Core.Enums;
+using CoursesManagment.Core.Extensions;
 using CoursesManagment.Core.Interfaces;
 using CoursesManagment.Data;
 using CoursesManagment.Data.DbModels.SecuritySchema;
@@ -10,13 +10,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Nest;
-using Org.BouncyCastle.Asn1.Ocsp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Web;
 
 namespace CoursesManagment.Services.Security.Account
@@ -52,12 +49,17 @@ namespace CoursesManagment.Services.Security.Account
             {
                 var appUser = await _appDbContext.Users.Include(x => x.UserRoles).ThenInclude(x => x.Role)
                                                        .FirstOrDefaultAsync(x => x.Email == loginParams.Email);
-
+                if (appUser == null)
+                {
+                    _response.Errors.Add("Email is not found".ErrorMsg());
+                    _response.IsPassed = false;
+                    return _response.Message;
+                }
                 if (appUser != null &&
                     _passwordHasher.VerifyHashedPassword(appUser, appUser.PasswordHash, loginParams.Password) !=
                     PasswordVerificationResult.Success)
                 {
-                    _response.Errors.Add($"For the Invalid password");
+                    _response.Errors.Add($"For the Invalid password".ErrorMsg());
                     _response.IsPassed = false;
                     return _response.Message;
                 }
@@ -72,7 +74,7 @@ namespace CoursesManagment.Services.Security.Account
             catch (Exception ex)
             {
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
                 return _response.Message;
             }
             return _response.Data;
@@ -85,7 +87,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (appUser == null)
                 {
                     _response.IsPassed = false;
-                    _response.Errors.Add("Invalid Email");
+                    _response.Errors.Add("Invalid Email".ErrorMsg());
                     return _response;
                 }
 
@@ -106,7 +108,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
             return _response;
         }
@@ -129,13 +131,13 @@ namespace CoursesManagment.Services.Security.Account
             {
                 if (string.IsNullOrEmpty(options.CurrentPassword))
                 {
-                    _response.Errors.Add("Currnet password should not be empty");
+                    _response.Errors.Add("Currnet password should not be empty".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
                 else if (string.IsNullOrEmpty(options.NewPassword))
                 {
-                    _response.Errors.Add("New password should not be empty");
+                    _response.Errors.Add("New password should not be empty".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
@@ -143,7 +145,7 @@ namespace CoursesManagment.Services.Security.Account
                 var appUser = await _userManager.FindByIdAsync(userId.ToString());
                 if (appUser == null)
                 {
-                    _response.Errors.Add("User is not found");
+                    _response.Errors.Add("User is not found".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
@@ -151,7 +153,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (!result.Succeeded)
                 {
                     _response.IsPassed = false;
-                    _response.Errors = result.Errors.Select(x => x.Description).ToList();
+                    _response.Errors.Add($"{result.Errors.Select(x => x.Description).ToList()}".ErrorMsg());
                     return _response;
                 }
 
@@ -161,7 +163,7 @@ namespace CoursesManagment.Services.Security.Account
             catch (Exception ex)
             {
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
                 return _response;
             }
             return _response;
@@ -173,20 +175,20 @@ namespace CoursesManagment.Services.Security.Account
                 var appUser = await _userManager.FindByIdAsync(id.ToString());
                 if (appUser == null)
                 {
-                    _response.Errors.Add("User id is not exist.");
+                    _response.Errors.Add("User id is not exist.".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
                 else if (appUser.IsActive == false)
                 {
-                    _response.Errors.Add("Your Account is not activated. Please contact your administration");
+                    _response.Errors.Add("Your Account is not activated. Please contact your administration".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
 
                 else if (options.FirstName.Length > 80 || options.LastName.Length > 80)
                 {
-                    _response.Errors.Add("First and last name fields should be limited to 80 characters at maximum.");
+                    _response.Errors.Add("First and last name fields should be limited to 80 characters at maximum.".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
@@ -196,7 +198,7 @@ namespace CoursesManagment.Services.Security.Account
                     var isDuplicated = _appDbContext.Users.Any(x => x.Id != id && x.Email.Trim().ToLower() == options.Email.Trim().ToLower());
                     if (isDuplicated)
                     {
-                        _response.Errors.Add("Email already exists, please try a new one.");
+                        _response.Errors.Add("Email already exists, please try a new one.".ErrorMsg());
                         _response.IsPassed = false;
                         return _response;
                     }
@@ -218,7 +220,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (!result.Succeeded)
                 {
                     _response.IsPassed = false;
-                    _response.Errors = result.Errors.Select(x => x.Description).ToList();
+                    _response.Errors.Add($"{result.Errors.Select(x => x.Description).ToList()}".ErrorMsg());
                     return _response;
                 }
 
@@ -229,7 +231,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
@@ -260,7 +262,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (!result.Succeeded)
                 {
                     _response.IsPassed = false;
-                    _response.Errors = result.Errors.Select(x => x.Description).ToList();
+                    _response.Errors.Add($"{result.Errors.Select(x => x.Description).ToList()}".ErrorMsg()) ;
                     return _response;
                 }
                 // send email to the user to change his password
@@ -275,7 +277,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
@@ -319,7 +321,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
@@ -339,7 +341,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
@@ -351,7 +353,7 @@ namespace CoursesManagment.Services.Security.Account
                 var appUser = await _userManager.FindByIdAsync(id.ToString());
                 if (appUser == null)
                 {
-                    _response.Errors.Add("A User id is not exist.");
+                    _response.Errors.Add("A User id is not exist.".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
@@ -366,7 +368,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (save == 0)
                 {
                     _response.IsPassed = false;
-                    _response.Errors.Add("There are no changes to be saved");
+                    _response.Errors.Add("There are no changes to be saved".ErrorMsg());
                     return _response;
                 }
 
@@ -377,7 +379,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
@@ -390,7 +392,7 @@ namespace CoursesManagment.Services.Security.Account
 
                 if (appUser == null)
                 {
-                    _response.Errors.Add("User id is not exist.");
+                    _response.Errors.Add("User id is not exist.".ErrorMsg());
                     _response.IsPassed = false;
                     return _response;
                 }
@@ -401,7 +403,7 @@ namespace CoursesManagment.Services.Security.Account
                 if (save == 0)
                 {
                     _response.IsPassed = false;
-                    _response.Errors.Add("There are no changes to be saved");
+                    _response.Errors.Add("There are no changes to be saved".ErrorMsg());
                     return _response;
                 }
 
@@ -412,7 +414,7 @@ namespace CoursesManagment.Services.Security.Account
             {
                 _response.Data = null;
                 _response.IsPassed = false;
-                _response.Errors.Add($"Error {ex.Message}");
+                _response.Errors.Add($"Error {ex.Message}".ErrorMsg());
             }
 
             return _response;
