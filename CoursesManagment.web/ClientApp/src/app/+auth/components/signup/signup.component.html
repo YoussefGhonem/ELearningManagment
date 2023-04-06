@@ -82,7 +82,7 @@
 <ng-template #formTemp>
   <div class="card-body p-4">
     <div class="text-center mt-2">
-      <h5 class="text-primary">Create New Vendor Account</h5>
+      <h5 class="text-primary">Create New Account</h5>
     </div>
     <div class="p-2 mt-4">
       <form [formGroup]="signupForm">
@@ -160,7 +160,8 @@
                 </button>
                 <arv-validation-messages for="confirmPassword">
                 </arv-validation-messages>
-                <span class="text-danger" style="font-size:0.875em ;" *ngIf="signupForm.getRawValue().confirmPassword != signupForm.getRawValue().password && !signupForm.get('confirmPassword').errors">
+                <span class="text-danger" style="font-size:0.875em ;"
+                  *ngIf="signupForm.getRawValue().confirmPassword != signupForm.getRawValue().password && !signupForm.get('confirmPassword').errors">
                   Passwords don't match.
                 </span>
               </div>
@@ -175,34 +176,26 @@
         <div class="mb-3 form-group phoneNumber">
           <label class="form-label" [redStar]="signupForm.get('phoneNumber')">Phone Number</label>
           <div class="input-group">
-            <ng-select aria-label-text="callingCode" [items]="countries" bindLabel="name" bindValue="callingCode"
-              id="callingCode" formControlName="callingCode">
-              <ng-template ng-label-tmp let-item="item" let-clear="clear">
-                <img class="rounded" height="15" width="15" [src]="item.flag" />
-                <b>{{' (+' + item.callingCode + ')'}}</b>
-              </ng-template>
-              <ng-template ng-option-tmp let-item="item" let-index="index">
-                <img class="rounded-circle" height="15" width="15" [src]="item.flag" />
-                <b>{{' (+' + item.callingCode + ')'}}</b>
-              </ng-template>
-            </ng-select>
-            <input aria-label="phoneNumber" type="text" id="phoneNumber" class="form-control" placeholder="Enter Phone Number"
-              formControlName="phoneNumber" mask="0000999999"
+            <input aria-label="phoneNumber" type="text" id="phoneNumber" class="form-control"
+              placeholder="Enter Phone Number" formControlName="phoneNumber" mask="0000999999"
               [formControlValidator]="signupForm.get('phoneNumber')" />
           </div>
-          <arv-validation-messages for="callingCode"></arv-validation-messages>
           <arv-validation-messages for="phoneNumber"> </arv-validation-messages>
         </div>
-
-        <!-- Info Alert -->
-        <div class="alert alert-info alert-top-border alert-dismissible fade show" role="alert">
-          <i class="ri-information-line me-3 align-middle fs-16 text-info"></i>
-          Please Preview And Sign Our <a
-            [ngClass]="{ 'disable-link': verificationDocument?.verificationDocumentUrl == null}"
-            (click)="openPreviewAndSign()" href="javascript:void(0)" class="text-info fs-12"> <u><b>Verification
-                Document</b></u> </a>
+        <label class="form-label" [redStar]="signupForm.get('dateOfBirth')">Date Of Birth</label>
+        <div class="col-sm-auto">
+          <div class="input-group">
+            <input formControlName="dateOfBirth"  class="form-control flatpickr-input" type="text" mwlFlatpickr [altInput]="true"
+              [convertModelValue]="true">
+            <div class="input-group-text bg-success border-success text-white"><i class="ri-calendar-2-line"></i></div>
+          </div>
         </div>
-
+        <!--end col-->
+        <!-- Info Alert -->
+        <!-- <div class="alert alert-info alert-top-border alert-dismissible fade show" role="alert">
+          <i class="ri-information-line me-3 align-middle fs-16 text-info"></i>
+          Please Preview And Sign Our 
+        </div> -->
 
         <div class="mt-4">
           <div class="form-check mb-3">
@@ -213,7 +206,8 @@
                     conditions</I></u></a>
             </label>
           </div>
-          <button [disabled]="signupForm.invalid || verificationDocument?.verificationDocumentUrl == null || signupForm.getRawValue().confirmPassword != signupForm.getRawValue().password"
+          <button
+            [disabled]="signupForm.invalid || verificationDocument?.verificationDocumentUrl == null || signupForm.getRawValue().confirmPassword != signupForm.getRawValue().password"
             class="btn btn-success w-100" type="submit" (click)="onSubmit()">
             Sign Up
           </button>

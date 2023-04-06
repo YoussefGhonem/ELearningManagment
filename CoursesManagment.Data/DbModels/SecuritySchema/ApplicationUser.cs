@@ -17,7 +17,7 @@ namespace CoursesManagment.Data.DbModels.SecuritySchema
         public string LastName { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
-        public DateTime? BirtDate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public bool? IsActive { get; set; }
         public bool? IsDelete { get; set; }
         public DateTimeOffset CreatedOn { get; set; }

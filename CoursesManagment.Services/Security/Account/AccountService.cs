@@ -25,8 +25,6 @@ namespace CoursesManagment.Services.Security.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
         private readonly IResponseDTO _response;
-
-
         public AccountService(
           IConfiguration configuration,
           UserManager<ApplicationUser> userManager,
@@ -213,7 +211,7 @@ namespace CoursesManagment.Services.Security.Account
                 appUser.FirstName = options.FirstName;
                 appUser.LastName = options.LastName;
                 appUser.PhoneNumber = options.PhoneNumber;
-                appUser.BirtDate = options.BirtDate;
+                appUser.DateOfBirth = options.DateOfBirth;
 
                 // Update DB
                 IdentityResult result = await _userManager.UpdateAsync(appUser);
@@ -248,6 +246,7 @@ namespace CoursesManagment.Services.Security.Account
                 appUser.IsActive = true;
                 var rolesFromDb = await _appDbContext.Roles.ToListAsync();
                 var role = rolesFromDb.FirstOrDefault(x => x.Name == options.Role.ToString());
+
                 appUser.UserRoles = new List<ApplicationUserRole>
                 {
                     new ApplicationUserRole

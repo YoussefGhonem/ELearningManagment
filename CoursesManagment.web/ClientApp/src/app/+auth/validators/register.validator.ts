@@ -10,6 +10,9 @@ export const RegisterValidator = {
       Validators.minLength(2, minLength => `The minimum length is ${minLength}`),
       Validators.maxLength(50, maxLength => `Maximum length is ${maxLength}`),
     ],
+    dateOfBirth: [
+
+    ],
     lastName: [
       Validators.required('Last name is required'),
       whiteSpaceValidator(`Value should not be a white spaces`),

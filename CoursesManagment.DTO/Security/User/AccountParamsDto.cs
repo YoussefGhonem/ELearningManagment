@@ -43,7 +43,7 @@ namespace CoursesManagment.DTO.Security.User
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public string? PhoneNumber { get; set; }
-        public DateTime? BirtDate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public ApplicationRolesEnum Role { get; set; }
     }
     public class ConfirmEmailParamsDto

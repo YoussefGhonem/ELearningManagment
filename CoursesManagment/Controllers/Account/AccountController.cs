@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using CoursesManagment.Core.Extensions;
 using CoursesManagment.Geteway.Extensions;
 using Nest;
+using CoursesManagment.Data;
 
 namespace CoursesManagment.Geteway.Controllers.Account
 {
@@ -19,16 +20,21 @@ namespace CoursesManagment.Geteway.Controllers.Account
         private readonly IAccountService _accountService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
-        private ApplicationUser _user;
+        private readonly AppDbContext _appDbContext;
+
         public AccountController(
            IAccountService accountService,
+          AppDbContext appDbContext
+           ,
            IResponseDTO response,
+
            UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher,
            IHttpContextAccessor httpContextAccessor) : base(response, httpContextAccessor)
         {
             _accountService = accountService;
             _userManager = userManager;
             _passwordHasher = passwordHasher;
+            _appDbContext = appDbContext;
         }
 
 
@@ -106,6 +112,14 @@ namespace CoursesManagment.Geteway.Controllers.Account
         [HttpPost]
         public async Task<IResponseDTO> CreateUser([FromBody] CreateUpdateUser options)
         {
+            // Validate
+            var validationResult = await (new CreateUserValidator(_appDbContext)).ValidateAsync(options);
+            if (!validationResult.IsValid)
+            {
+                _response.IsPassed = false;
+                _response.Errors = validationResult.ErrorMsg();
+                return _response;
+            }
             _response = await _accountService.CreateUser(options, LoggedInUserId);
             return _response;
         }

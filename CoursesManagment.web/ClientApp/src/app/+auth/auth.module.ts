@@ -7,6 +7,8 @@ import { NgbActiveModal, NgbCarouselModule, NgbModule, NgbToastModule } from "@n
 import { NgxMaskModule } from "ngx-mask";
 import { SignaturePadModule } from '@ng-plus/signature-pad';
 // @shared
+import { FlatpickrModule } from 'angularx-flatpickr';
+
 import { SharedDirectivesModule } from "@shared/directives/shared-directives.module";
 // Components
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -49,6 +51,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     NgbToastModule,
     SharedDirectivesModule,
     NgxMaskModule.forRoot(),
+    FlatpickrModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
     ReactiveValidationModule,
